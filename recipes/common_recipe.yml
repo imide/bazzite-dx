@@ -9,13 +9,13 @@ modules:
       - ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-bazzite}"
       - ARG NVIDIA_TYPE="${NVIDIA_TYPE:-}"
       - ARG UBLUE_IMAGE_TAG="${UBLUE_IMAGE_TAG:-latest}"
-      - COPY --from=ghcr.io/ublue-os/bluefin-cli /usr/bin/atuin /usr/bin/atuin
-      - COPY --from=ghcr.io/ublue-os/bluefin-cli /usr/share/bash-prexec /usr/share/bash-prexec
+      # - COPY --from=ghcr.io/ublue-os/bluefin-cli /usr/bin/atuin /usr/bin/atuin
+      # - COPY --from=ghcr.io/ublue-os/bluefin-cli /usr/share/bash-prexec /usr/share/bash-prexec
 
 # Activate RPM Fusion repos
-  - type: script
-    scripts:
-      - copr-repos.sh
+  # - type: script
+  #   scripts:
+  #     - copr-repos.sh
 
 # Install packages from Aurora and Aurora DX
   - type: safe-rpm-ostree
@@ -177,6 +177,13 @@ modules:
       - topgrade
       - starship
 
+    optfix:
+      - 1Password
+      - brave.com
+      - "Mullvad VPN"
+
+  
+
 # activate RPM Fusion repos
   - type: script
     snippets:
@@ -214,7 +221,7 @@ modules:
         - docker.socket
         - podman.socket
         - swtpm-workaround.service
-        # - mullvad-daemon.service # Build fails with this added, will test on my machine later
+        - mullvad-daemon.service # Build fails with this added, will test on my machine later
     user:
       enabled:
         - podman-auto-update.timer
