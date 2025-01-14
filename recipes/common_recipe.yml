@@ -1,0 +1,220 @@
+# yaml-language-server: $schema=https://schema.blue-build.org/recipe-v1.json
+
+modules:
+  - type: containerfile
+    snippets:
+      - ARG IMAGE_VENDOR="${IMAGE_REGISTRY}"
+      - ARG FEDORA_MAJOR_VERSION="${OS_VERSION}"
+      - ARG IMAGE_FLAVOR="${IMAGE_FLAVOR:-main}"
+      - ARG BASE_IMAGE_NAME="${BASE_IMAGE_NAME:-bazzite}"
+      - ARG NVIDIA_TYPE="${NVIDIA_TYPE:-}"
+      - ARG UBLUE_IMAGE_TAG="${UBLUE_IMAGE_TAG:-latest}"
+      - COPY --from=ghcr.io/ublue-os/bluefin-cli /usr/bin/atuin /usr/bin/atuin
+      - COPY --from=ghcr.io/ublue-os/bluefin-cli /usr/share/bash-prexec /usr/share/bash-prexec
+
+# Activate RPM Fusion repos
+  - type: script
+    scripts:
+      - copr-repos.sh
+
+# Install packages from Aurora and Aurora DX
+  - type: safe-rpm-ostree
+    source: local
+    repos:
+      - https://copr.fedorainfracloud.org/coprs/ublue-os/staging/repo/fedora-%OS_VERSION%/ublue-os-staging-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/che/nerd-fonts/repo/fedora-%OS_VERSION%/che-nerd-fonts-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/ublue-os/bling/repo/fedora-%OS_VERSION%/ublue-os-bling-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/ganto/lxc4/repo/fedora-%OS_VERSION%/ganto-lxc4-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/karmab/kcli/repo/fedora-%OS_VERSION%/karmab-kcli-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/atim/ubuntu-fonts/repo/fedora-%OS_VERSION%/atim-ubuntu-fonts-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/hikariknight/looking-glass-kvmfr/repo/fedora-%OS_VERSION%/hikariknight-looking-glass-kvmfr-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/ganto/umoci/repo/fedora-%OS_VERSION%/ganto-umoci-fedora-%OS_VERSION%.repo
+      - https://copr.fedorainfracloud.org/coprs/atim/starship/repo/fedora-41/atim-starship-fedora-%OS_VERSION%.repo
+
+      # Brave and Mullvad
+      - https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo
+      - https://repository.mullvad.net/rpm/stable/mullvad.repo
+    
+    keys:
+      - https://brave-browser-rpm-release.s3.brave.com/brave-core.asc
+      - https://repository.mullvad.net/rpm/mullvad-keyring.asc
+
+      
+
+    install:
+    # Base aurora packages
+      - adcli
+      - bash-color-prompt
+      - bcache-tools
+      - borgbackup
+      - bootc
+      - brave-browser
+      - https://downloads.1password.com/linux/rpm/stable/x86_64/1password-latest.rpm
+      - evtest
+      - epson-inkjet-printer-escpr
+      - epson-inkjet-printer-escpr2
+      - fastfetch
+      - fish
+      - firewall-config
+      - foo2zjs
+      - freeipa-client
+      - fuse-encfs
+      - gcc
+      - git-credential-libsecret
+      - glow
+      - gum
+      - ghostty
+      - gh
+      - hplip
+      - krb5-workstation
+      - ifuse
+      - input-leap
+      - input-remapper
+      - jetbrains-mono-fonts-all
+      - libimobiledevice
+      - libxcrypt-compat
+      - libsss_autofs
+      - lm_sensors
+      - make
+      - mesa-libGLU
+      - nerd-fonts
+      - oddjob-mkhomedir
+      - opendyslexic-fonts
+      - playerctl
+      - printer-driver-brlaser
+      - pulseaudio-utils
+      - python3-pip
+      - rclone
+      - restic
+      - samba-dcerpc
+      - samba-ldb-ldap-modules
+      - samba-winbind-clients
+      - samba-winbind-modules
+      - samba
+      - setools-console
+      - solaar
+      - sssd-ad
+      - sssd-ipa
+      - sssd-krb5
+      - sssd-nfs-idmap
+      - stress-ng
+      - tailscale
+      - tmux
+      - usbmuxd
+      - wireguard-tools
+      - xprop
+      - wl-clipboard
+      - zsh
+
+    # DX aurora packages
+      - adobe-source-code-pro-fonts
+      - android-tools
+      - bcc
+      - bpftop
+      - bpftrace
+      - cascadia-code-fonts
+      - cockpit-bridge
+      - cockpit-machines
+      - cockpit-networkmanager
+      - cockpit-ostree
+      - cockpit-podman
+      - cockpit-selinux
+      - cockpit-storaged
+      - cockpit-system
+      - code
+      - containerd.io
+      - dbus-x11
+      - devpod
+      - docker-ce
+      - docker-ce-cli
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - edk2-ovmf
+      - flatpak-builder
+      - genisoimage
+      - google-droid-sans-mono-fonts
+      - google-go-mono-fonts
+      - ibm-plex-mono-fonts
+      - incus
+      - incus-agent
+      - iotop
+      # - kcli
+      - libvirt
+      - libvirt-nss
+      - lxc
+      - mozilla-fira-mono-fonts
+      - nicstat
+      - numactl
+      - p7zip-plugins
+      - p7zip
+      - podman-compose
+      - podman-tui
+      - podmansh
+      - powerline-fonts
+      - powertop
+      - qemu-char-spice
+      - qemu-device-display-virtio-gpu
+      - qemu-device-display-virtio-vga
+      - qemu-device-usb-redirect
+      - qemu-img
+      - qemu-system-x86-core
+      - qemu-user-binfmt
+      - qemu-user-static
+      - qemu
+      # - rocm-hip
+      # - rocm-opencl
+      - rocm-smi
+      - sysprof
+      - tiptop
+      - trace-cmd
+      - ubuntu-family-fonts
+      - udica
+      - umoci
+      - virt-manager
+      - virt-viewer
+      - virt-v2v
+      - ydotool
+      - topgrade
+      - starship
+
+# activate RPM Fusion repos
+  - type: script
+    snippets:
+      - "find ${CONFIG_DIRECTORY}/aurora/build_files -type f -exec chmod +x {} \\;" # Make aurora scripts executable
+    scripts:
+      - ../aurora/build_files/base/00-image-info.sh
+      - fetch-install.sh
+    #  - ../aurora/build_files/base/fetch-quadlets.sh # TODO: figure out what to do with this 
+
+# alternatives cannot create symlinks on its own during a container build
+  - type: script
+    snippets:
+      - "ln -sf /usr/bin/ld.bfd /etc/alternatives/ld && ln -sf /etc/alternatives/ld /usr/bin/ld"
+
+# Install fonts
+  - type: fonts
+    fonts:
+      nerd-fonts:
+        - FiraCode # don't add spaces or "Nerd Font" suffix.
+        - Hack
+        - SourceCodePro
+        - Terminus
+        - JetBrainsMono
+        - NerdFontsSymbolsOnly
+      google-fonts:
+        - Roboto
+        - Open Sans
+
+# Enable systemd services
+  - type: systemd
+    system:
+      enabled:
+        - rpm-ostree-countme.service
+        # - dconf-update.service Already in Bazzite
+        - docker.socket
+        - podman.socket
+        - swtpm-workaround.service
+        # - mullvad-daemon.service # Build fails with this added, will test on my machine later
+    user:
+      enabled:
+        - podman-auto-update.timer

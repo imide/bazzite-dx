@@ -1,0 +1,67 @@
+# image will be published to ghcr.io/<user>/<name>
+name: bazzite-dx
+# description will be included in the image's metadata
+description: This is my custom Bazzite image that tries to add all the development capabilities from the Aurora DX image.
+
+# the base image to build on top of (FROM) and the version tag to use
+base-image: ghcr.io/ublue-os/bazzite
+image-version: stable # latest is also supported if you want new updates ASAP
+
+# module configuration, executed in order
+# you can include multiple instances of the same module
+modules:
+  - type: files
+    files:
+      - source: aurora/system_files/shared/usr/bin
+        destination: /usr/bin
+      - source: aurora/system_files/shared/usr/libexec
+        destination: /usr/libexec
+      - source: aurora/system_files/shared/usr/lib/tmpfiles.d
+        destination: /usr/lib/tmpfiles.d
+#      - source: aurora/system_files/shared/usr/share/ublue-os/aurora-cli
+#        destination: /usr/share/ublue-os/aurora-cli
+      - source: aurora/system_files/shared/usr/share/ublue-os/homebrew
+        destination: /usr/share/ublue-os/homebrew
+ #     - source: aurora/system_files/shared/usr/share/ublue-os/quadlets
+ #       destination: /usr/share/ublue-os/quadlets
+ #     - source: aurora/system_files/shared/usr/share/ublue-os/ublue-os.jsonc
+ #       destination: /usr/share/ublue-os/ublue-os.jsonc
+      - source: aurora/system_files/kinoite/usr/bin
+        destination: /usr/bin
+      - source: aurora/system_files/kinoite/usr/share/applications
+        destination: /usr/share/applications
+ #     - source: aurora/system_files/kinoite/usr/share/kglobalaccel
+ #       destination: /usr/share/kglobalaccel
+      - source: aurora/system_files/dx
+        destination: /
+      - source: files/shared
+        destination: /
+      - source: files/kinoite
+        destination: /
+
+# Common steps between both versions
+  - from-file: common_recipe.yml
+
+# Install KDE Packages
+  - type: safe-rpm-ostree
+    source: local
+    install:
+      - kde-runtime-docs
+      - kdenetwork-filesharing
+      # - kdeplasma-addons # Already included in bazzite
+      - kdialog
+      # - libadwaita-qt5
+      # - libadwaita-qt6
+      - plasma-wallpapers-dynamic
+      - skanpage
+    remove:
+      - krfb
+      - krfb-libs
+      # - plasma-welcome
+
+# Cleanup repos, etc...
+  - type: script
+    scripts:
+      - cleanup.sh
+
+  - type: signing # this sets up the proper policy & signing files for signed images to work fully
