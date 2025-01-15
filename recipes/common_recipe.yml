@@ -220,7 +220,7 @@ modules:
         - docker.socket
         - podman.socket
         - swtpm-workaround.service
-        - mullvad-daemon.service # Build fails with this added, will test on my machine later
+    #    - mullvad-daemon.service # Build fails with this added, will test on my machine later
     user:
       enabled:
         - podman-auto-update.timer
